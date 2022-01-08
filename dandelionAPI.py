@@ -9,8 +9,7 @@ import operator
 def loginDandelion():
     file = open('credentialsDandelion.json')
     keys = json.load(file)
-    datatxt = DataTXT(app_id = keys['app_id'], app_key = keys['app_key'])
-    return datatxt
+    return DataTXT(app_id = keys['app_id'], app_key = keys['app_key'])
 
 
 #login Mongo
@@ -98,43 +97,42 @@ def getType(types):
 
 def main():
     #input id_exp seed o candidate?
-    
+
     MAX_QUERY = 1048476
     args = sys.argv[1:]
     id_exp = str(args[0])
     isSeed = args[1]
     # login dandelion
     datatxt = loginDandelion()
-    
+
     #    logine mongo
     mongo_client = loginMongo()
-    
+
     #get all tweets and a dictionary of the index of the end of each tweet
     all_tweets, index_tweets = getTweets(id_exp, mongo_client)
-    
+
     #   create indexes for dandelion calls
     numbOfCalls = math.ceil(len(all_tweets)/MAX_QUERY)
     last = 0
     annotations = []
-    
+
     #dandelion
     #ciclo for sugli user aggiungendo ad un testo totale fino a quando non superi 1048476 salvandoti indice di quando cambi user
-    for i in range(numbOfCalls):
+    for _ in range(numbOfCalls):
         index = last + MAX_QUERY
-        if (index> len(all_tweets)):
-            index = len(all_tweets)
+        index = min(index, len(all_tweets))
         #        chiamata a dandelion
         result = callDandelion(all_tweets[last: index], datatxt)
         last = index
         annotations += result['annotations']
-    
-    
-    
+
+
+
         for ann in annotations:
             start = int(ann['start'])
             end = int(ann['end'])
-            
-            
+
+
             #    salva risultati dandelion in mongo
             prec = list(index_tweets.keys())[0]
             for t in index_tweets:

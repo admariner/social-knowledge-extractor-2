@@ -50,7 +50,7 @@ def main():
         db = loginMongo()
     except:
         print('error login Mongo')
-    
+
     try:
         opts, args = getopt.getopt(sys.argv[1:], 'n:s:e:x:')
     except getopt.GetoptError as err:
@@ -60,9 +60,7 @@ def main():
         sys.exit(2)
     id_experiment = args[0]
     type = args[1]
-    N = None
-    if len(args)>2:
-        N = int(args[2])
+    N = int(args[2]) if len(args)>2 else None
     users = getUsers(id_experiment, type, db)
     createFeatures(id_experiment, users, db, N)
 

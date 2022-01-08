@@ -15,10 +15,7 @@ def loginMySql():
 def getAccounts(cursor, id_experiment, name_table):
     command = ("SELECT screen_name FROM "+name_table+" WHERE id_experiment = "+id_experiment)
     cursor.execute(command)
-    accounts = []
-    for name in cursor:
-        accounts.append(name[0])
-    return accounts
+    return [name[0] for name in cursor]
 
 def getAccountsVal(cursor, id_experiment, name_table):
     command = ("SELECT screen_name, score FROM "+name_table+" WHERE id_experiment = "+id_experiment)

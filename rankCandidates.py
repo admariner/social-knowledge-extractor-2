@@ -18,10 +18,7 @@ def findTopCandidates(id_experiment, cursor):
     n = '20'
     command = ("SELECT screen_name FROM candidates WHERE id_experiment = "+id_experiment+" ORDER BY score DESC LIMIT "+n)
     cursor.execute(command)
-    emergents = []
-    for cand in cursor:
-        emergents.append(cand[0])
-    return emergents
+    return [cand[0] for cand in cursor]
 
 def storeEmergents(emergent, id_experiment, cursor):
     command = ("INSERT INTO emergents (screen_name, id_experiment) VALUES ('"+emergent+"', '"+id_experiment+"')")

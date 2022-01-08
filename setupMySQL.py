@@ -34,46 +34,15 @@ def main():
         dbSQL, cursor, db_name = loginMySql()
     except:
         print('error login MySQL')
-    TABLES = {}
-    TABLES['seeds'] = (
-                       "CREATE TABLE `seeds` ("
-                       "  `screen_name` char(20) NOT NULL,"
-                       "  `id_experiment` char(20) NOT NULL,"
-                       " `id` int NOT NULL AUTO_INCREMENT,"
-                       "PRIMARY KEY (`id`))")
-    TABLES['hubs'] = (
-                   "CREATE TABLE `hubs` ("
-                   "  `screen_name` char(20) NOT NULL,"
-                   "  `id_experiment` char(20) NOT NULL,"
-                   " `id` int NOT NULL AUTO_INCREMENT,"
-                   "PRIMARY KEY (`id`))")
-    TABLES['candidates'] = (
-                        "CREATE TABLE `candidates` ("
-                        "  `screen_name` char(20) NOT NULL,"
-                        "  `id_experiment` char(20) NOT NULL,"
-                        " `score` float default NULL,"
-                        " `id` int NOT NULL AUTO_INCREMENT,"
-                            "PRIMARY KEY (`id`))")
-    TABLES['emergents'] = (
-                        "CREATE TABLE `emergents` ("
-                        "  `screen_name` char(20) NOT NULL,"
-                        "  `id_experiment` char(20) NOT NULL,"
-                        " `id` int NOT NULL AUTO_INCREMENT,"
-                           "PRIMARY KEY (`id`))")
-    TABLES['validated'] = (
-                        "CREATE TABLE `validated` ("
-                        "  `screen_name` char(20) NOT NULL,"
-                        "  `id_experiment` char(20) NOT NULL,"
-                        " `score` float default NULL,"
-                        " `id` int NOT NULL AUTO_INCREMENT,"
-                           "PRIMARY KEY (`id`))")
-    TABLES['expert_types'] = (
-                       "CREATE TABLE `expert_types` ("
-                       "  `type` char(20) NOT NULL,"
-                       "  `id_experiment` char(20) NOT NULL,"
-                       " `id` int NOT NULL AUTO_INCREMENT,"
-                       "PRIMARY KEY (`id`))")
-    
+    TABLES = {
+        'seeds': 'CREATE TABLE `seeds` (  `screen_name` char(20) NOT NULL,  `id_experiment` char(20) NOT NULL, `id` int NOT NULL AUTO_INCREMENT,PRIMARY KEY (`id`))',
+        'hubs': 'CREATE TABLE `hubs` (  `screen_name` char(20) NOT NULL,  `id_experiment` char(20) NOT NULL, `id` int NOT NULL AUTO_INCREMENT,PRIMARY KEY (`id`))',
+        'candidates': 'CREATE TABLE `candidates` (  `screen_name` char(20) NOT NULL,  `id_experiment` char(20) NOT NULL, `score` float default NULL, `id` int NOT NULL AUTO_INCREMENT,PRIMARY KEY (`id`))',
+        'emergents': 'CREATE TABLE `emergents` (  `screen_name` char(20) NOT NULL,  `id_experiment` char(20) NOT NULL, `id` int NOT NULL AUTO_INCREMENT,PRIMARY KEY (`id`))',
+        'validated': 'CREATE TABLE `validated` (  `screen_name` char(20) NOT NULL,  `id_experiment` char(20) NOT NULL, `score` float default NULL, `id` int NOT NULL AUTO_INCREMENT,PRIMARY KEY (`id`))',
+        'expert_types': 'CREATE TABLE `expert_types` (  `type` char(20) NOT NULL,  `id_experiment` char(20) NOT NULL, `id` int NOT NULL AUTO_INCREMENT,PRIMARY KEY (`id`))',
+    }
+
     try:
         dbSQL.database = db_name
         print('db already exists')
