@@ -12,8 +12,7 @@ def login():
     keys = json.loads(fileKeys)
     auth = tweepy.OAuthHandler(keys['consumer_key'], keys['consumer_secret'])
     auth.set_access_token(keys['access_token'], keys['access_token_secret'])
-    twitter = tweepy.API(auth, wait_on_rate_limit=True)
-    return twitter
+    return tweepy.API(auth, wait_on_rate_limit=True)
 
 
 def loginMySql():
@@ -36,7 +35,6 @@ def loginMongo():
 def getTweets(twitter, account, N, start_date, end_date, id_experiment):
     max_number = 3200
     max_per_request = 200
-    languages = ("de", "en", "es", "fr", "it", "pt")
     user_tweets = []
     if (N>max_number):
         N = max_number
@@ -46,11 +44,12 @@ def getTweets(twitter, account, N, start_date, end_date, id_experiment):
         iteration, last = divmod(N, max_per_request)
     user_timeline = twitter.user_timeline(screen_name =account, count=1)
     if (user_timeline):
+        languages = ("de", "en", "es", "fr", "it", "pt")
         for i in range(iteration+1):
             lastTweetId = int(user_timeline[0].id_str)
             user_timeline = twitter.user_timeline(screen_name = account, max_id = lastTweetId, count = max_per_request)
             for tweets in user_timeline:
-                if (tweets.lang == None):
+                if tweets.lang is None:
                     tweets.lang = detect(tweets.text.replace("\n", " "))
                 if (tweets.lang in languages):
                     d = {'id_user': tweets.user.id_str, 'screen_name': tweets.user.screen_name.lower(), 'text': '', 'lang':tweets.lang, 'favourite_count': tweets.favorite_count, 'retweet_count': tweets.retweet_count, 'create_at': tweets.created_at, 'mentions': tweets.entities['user_mentions'], '_id':tweets.id_str, 'id_experiment': [id_experiment], 'coordinates':tweets.coordinates}
@@ -69,7 +68,7 @@ def storeTweets(tweets, db):
     collection = 'tweets'
     experiment = tweets['id_experiment'][0]
     t = db[collection].find_one({'_id':tweets['_id']})
-    if t == None:
+    if t is None:
         db[collection].insert(tweets)
     else:
         if str(experiment) not in t['id_experiment']:
@@ -87,10 +86,7 @@ def storeUser(account, user_id, id_experiment, db,name_table):
 def getAccounts(cursor, id_experiment, name_table):
     command = ("SELECT screen_name FROM "+name_table+" WHERE id_experiment = "+id_experiment)
     cursor.execute(command)
-    accounts = []
-    for name in cursor:
-        accounts.append(name[0])
-    return accounts
+    return [name[0] for name in cursor]
 
 
 def main():

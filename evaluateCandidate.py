@@ -22,17 +22,13 @@ def loginMongo():
 
 def getScores(id_experiment, db):
     result = db['users'].find({'id_experiment':id_experiment, 'type':'candidates'},{'score_instances':1,'score_types':1,'_id':0,'screen_name':1})
-    users_score = []
-    for i in result:
-        users_score.append(i)
-    return users_score
+    return list(result)
 
 def totalScore(user_score):
     alpha = 0.7
     score_instances = user_score['score_instances']
     score_types = user_score['score_types']
-    total_score = (1-alpha)*score_types + alpha*score_instances
-    return total_score
+    return (1-alpha)*score_types + alpha*score_instances
 
 def storeScore(cursor, id_experiment, screen_name, score):
     print(screen_name, id_experiment, score)

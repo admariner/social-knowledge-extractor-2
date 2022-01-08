@@ -31,21 +31,22 @@ def storeScore(cursor, id_experiment, screen_name, score):
 
 #type
 def getCentroidType(db, id_experiment):
-    centroid = db['centroid'].find_one({'id_experiment':id_experiment, 'type':'type'},{'centroid':1, '_id':0})['centroid']
-    return centroid
+    return db['centroid'].find_one(
+        {'id_experiment': id_experiment, 'type': 'type'},
+        {'centroid': 1, '_id': 0},
+    )['centroid']
 
 
 
 def getCentroidInstance(db, id_experiment):
-    centroid = db['centroid'].find_one({'id_experiment':id_experiment, 'type':'instance'},{'centroid':1, '_id':0})['centroid']
-    return centroid
+    return db['centroid'].find_one(
+        {'id_experiment': id_experiment, 'type': 'instance'},
+        {'centroid': 1, '_id': 0},
+    )['centroid']
 
 def getCandidates(db, id_experiment):
     result = db['users'].find({'id_experiment':id_experiment, 'type':'candidates'},{'instances':1,'features':1, 'screen_name':1})
-    candidates =[]
-    for cand in result:
-        candidates.append(cand)
-    return candidates
+    return list(result)
 
 def evaluateCandidate(centroid, user_features):
     vect_centroid = []
@@ -59,12 +60,7 @@ def evaluateCandidate(centroid, user_features):
             user_features.pop(i)
         else:
             vect_user.append(0)
-#    for f in user_features:
-#        vect_centroid.append(0)
-#        vect_user.append(user_features[f])
-
-    score = 1 - spatial.distance.cosine(vect_centroid, vect_user)
-    return score
+    return 1 - spatial.distance.cosine(vect_centroid, vect_user)
 
 
 

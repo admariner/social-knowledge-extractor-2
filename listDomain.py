@@ -11,8 +11,7 @@ from mysql.connector import errors
 def loginDandelion():
     file = open('credentialsDandelion.json')
     keys = json.load(file)
-    datatxt = DataTXT(app_id = keys['app_id'], app_key = keys['app_key'])
-    return datatxt
+    return DataTXT(app_id = keys['app_id'], app_key = keys['app_key'])
 
 def loginMySql():
     fileKeys = open('adressMySQL.json').read()
@@ -38,10 +37,7 @@ def storeCandidate(cursor, data):
 def getSeeds(cursor, id_experiment):
     command = ("SELECT screen_name FROM seeds WHERE id_experiment = "+id_experiment)
     cursor.execute(command)
-    accounts = []
-    for name in cursor:
-        accounts.append(name[0])
-    return accounts
+    return [name[0] for name in cursor]
 
 
 def getMentions(db,id_experiment, seeds):

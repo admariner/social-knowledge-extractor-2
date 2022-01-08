@@ -12,8 +12,7 @@ def login():
     keys = json.loads(fileKeys)
     auth = tweepy.OAuthHandler(keys['consumer_key'], keys['consumer_secret'])
     auth.set_access_token(keys['access_token'], keys['access_token_secret'])
-    twitter = tweepy.API(auth, wait_on_rate_limit=True)
-    return twitter
+    return tweepy.API(auth, wait_on_rate_limit=True)
 
 
 def loginMySql():
@@ -36,7 +35,6 @@ def loginMongo():
 def getTweets(twitter, account, N, start_date, end_date, id_experiment):
     max_number = 3200
     max_per_request = 200
-    languages = ("de", "en", "es", "fr", "it", "pt")
     user_tweets = []
     if (N>max_number):
         N = max_number
@@ -46,11 +44,12 @@ def getTweets(twitter, account, N, start_date, end_date, id_experiment):
         iteration, last = divmod(N, max_per_request)
     user_timeline = twitter.user_timeline(screen_name =account, count=1)
     if (user_timeline):
+        languages = ("de", "en", "es", "fr", "it", "pt")
         for i in range(iteration+1):
             lastTweetId = int(user_timeline[0].id_str)
             user_timeline = twitter.user_timeline(screen_name = account, max_id = lastTweetId, count = max_per_request)
             for tweets in user_timeline:
-                if (tweets.lang == None):
+                if tweets.lang is None:
                     tweets.lang = detect(tweets.text.replace("\n", " "))
                 if (tweets.lang in languages):
                     d = {'id_user': tweets.user.id_str, 'text': tweets.text, 'lang':tweets.lang, 'favourite_count': tweets.favorite_count, 'retweet_count': tweets.retweet_count, 'create_at': tweets.created_at, 'mentions': tweets.entities['user_mentions'], '_id':tweets.id_str, 'id_experiment': [id_experiment], 'coordinates':tweets.coordinates}
@@ -69,7 +68,7 @@ def storeTweets(tweets, db):
     collection = 'tweets'
     experiment = tweets['id_experiment'][0]
     t = db[collection].find_one({'_id':tweets['_id']})
-    if t == None:
+    if t is None:
         db[collection].insert(tweets)
     else:
         if str(experiment) not in t['id_experiment']:
@@ -90,10 +89,7 @@ def storeEmergents(emergent, id_experiment, cursor):
 def getAccounts(cursor, id_experiment, name_table):
     command = ("SELECT screen_name FROM "+name_table+" WHERE id_experiment = "+id_experiment)
     cursor.execute(command)
-    accounts = []
-    for name in cursor:
-        accounts.append(name[0])
-    return accounts
+    return [name[0] for name in cursor]
 
 def getDescription(twitter, account, N, start_date, end_date, id_experiment, count):
     isEmergent = False
@@ -133,7 +129,7 @@ def main():
     end_date = None
     id_experiment = None
     name_table = args[0]
-    
+
     for o, a in opts:
         if o == "-n":
             N = a
@@ -153,21 +149,16 @@ def main():
             count, isEmergent = getDescription(twitter, account, int(N), start_date, end_date, id_experiment, count)
             if isEmergent:
                 print(account)
-            if not isEmergent or True:
-                tweets = getTweets(twitter, account, int(N), start_date, end_date, id_experiment)
-                user_id = tweets[0]['id_user']
-                storeUser(account, user_id, id_experiment, db, name_table)
-#            else:
-#                storeEmergents(account, id_experiment)
-
+            tweets = getTweets(twitter, account, int(N), start_date, end_date, id_experiment)
+            user_id = tweets[0]['id_user']
+            storeUser(account, user_id, id_experiment, db, name_table)
         except:
             print(account+' error')
 #        scrivi errore nel log
 #       store tweets in db for seed i
         try:
-            if not isEmergent or True:
-                for tweet in tweets:
-                    storeTweets(tweet, db)
+            for tweet in tweets:
+                storeTweets(tweet, db)
         except:
             print('errorSalva')
 #        scrivi errore nel log

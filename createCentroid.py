@@ -9,12 +9,8 @@ def loginMongo():
     return client[keys['name_db']]
 
 def getFeatureVectors(db, id_experiment):
-    seed_features = []
     seeds = db['users'].find({'id_experiment':id_experiment, 'type':'seeds'},{'_id':0, 'features':1})
-    for i in seeds:
-        features = i['features']
-        seed_features.append(features)
-    return seed_features
+    return [i['features'] for i in seeds]
 
     
 
@@ -27,8 +23,8 @@ def createCentroid(seed_features):
             else:
                 centroid[feature] += seed[feature]
     num_seeds = len(seed_features)
-    for feature in centroid:
-        centroid[feature] /= float(num_seeds)
+    for value in centroid.values():
+        value /= float(num_seeds)
     return centroid
 
 def storeCentroid(db, centroid, id_experiment):

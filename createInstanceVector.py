@@ -28,10 +28,7 @@ def getUsers(id_experiment, type, db):
 def getExpertTypes(id_experiment, cursor):
     command = ("SELECT type FROM expert_types WHERE id_experiment='"+id_experiment+"'")
     cursor.execute(command)
-    expert_types = []
-    for c in cursor:
-        expert_types.append(c[0])
-    return expert_types
+    return [c[0] for c in cursor]
 
 def createFeatures(id_experiment, users, expert_types, db, N):
     for user in users:
@@ -87,12 +84,10 @@ def main():
         sys.exit(2)
     id_experiment = args[0]
     type = args[1]
-    N = None
-    if len(args)>2:
-        N = int(args[2])
+    N = int(args[2]) if len(args)>2 else None
     users = getUsers(id_experiment, type, db)
     expert_types = getExpertTypes(id_experiment, cursor)
-    
+
     createFeatures(id_experiment, users, expert_types, db, N)
     dbSQL.commit()
     cursor.close()
